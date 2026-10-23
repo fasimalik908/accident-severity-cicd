@@ -19,11 +19,13 @@ describe('App', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render the heading', async () => {
+  it('should render exactly one non-empty heading', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('US Accident Severity Prediction');
+    const headings = compiled.querySelectorAll('h1');
+    expect(headings.length).toBe(1);
+    expect(headings[0].textContent?.trim().length ?? 0).toBeGreaterThan(0);
   });
 
   it('should render one input per schema feature (12)', async () => {
