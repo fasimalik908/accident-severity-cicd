@@ -1,0 +1,14 @@
+{
+  "Source": "Source2",
+  "State": "PA",
+  "Hour": 17,
+  "Day_of_Week": 1,
+  "Temperature(F)": 36.0,
+  "Humidity(%)": 59.0,
+  "Visibility(mi)": 10.0,
+  "Wind_Speed(mph)": 9.0,
+  "Weather_Condition": "Fair",
+  "Crossing": false,
+  "Junction": true,
+  "Traffic_Signal": false
+}
