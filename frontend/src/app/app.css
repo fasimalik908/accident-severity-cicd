@@ -1,0 +1,181 @@
+:host {
+  display: block;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.page-header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.8rem;
+}
+
+.subtitle {
+  margin: 0 0 1.5rem;
+  color: var(--muted);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.notice {
+  grid-column: 1 / -1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e0b252;
+  border-radius: 8px;
+  background: #fff7e0;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.card h2 {
+  margin: 0 0 1rem;
+  font-size: 1.15rem;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.9rem 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.field label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.field input,
+.field select {
+  font: inherit;
+  padding: 0.45rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+}
+
+.field.invalid input,
+.field.invalid select {
+  border-color: var(--danger);
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 0.85rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+
+button {
+  font: inherit;
+  padding: 0.55rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--accent);
+  cursor: pointer;
+}
+
+button.primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+button.secondary {
+  background: #fff;
+  color: var(--accent);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.api-error {
+  padding: 0.75rem;
+  border-radius: 6px;
+  background: #fdecec;
+  color: var(--danger);
+  margin-bottom: 1rem;
+}
+
+.prediction {
+  font-size: 1.3rem;
+  margin: 0 0 0.75rem;
+}
+
+.probabilities {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.probabilities th,
+.probabilities td {
+  text-align: left;
+  padding: 0.3rem 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.probabilities tr.predicted td {
+  font-weight: 700;
+}
+
+.pct {
+  white-space: nowrap;
+}
+
+.bar-cell {
+  width: 45%;
+}
+
+.bar {
+  display: block;
+  height: 0.6rem;
+  border-radius: 3px;
+  background: var(--accent);
+}
+
+.meta,
+.muted {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.disclaimer {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--muted);
+}
+
+@media (max-width: 760px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header h1 {
+    font-size: 1.45rem;
+  }
+}

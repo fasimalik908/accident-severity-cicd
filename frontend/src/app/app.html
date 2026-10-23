@@ -1,0 +1,105 @@
+<header class="page-header">
+  <h1>US Accident Severity Prediction</h1>
+  <p class="subtitle">Teaching/research prototype — LightGBM model, 12 inputs known at accident onset</p>
+</header>
+
+<main class="layout">
+  @if (deployedStatic) {
+    <div class="notice" role="status">
+      This GitHub Pages site hosts only the static user interface. Predictions require the Flask API
+      running locally (see README).
+    </div>
+  }
+
+  <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <h2>Accident details</h2>
+
+    <div class="field-grid">
+      @for (feature of features; track feature.name) {
+        <div class="field" [class.invalid]="showError(feature)">
+          <label [for]="inputId(feature)">{{ feature.label }}</label>
+
+          @switch (feature.kind) {
+            @case ('category') {
+              <select [id]="inputId(feature)" [formControlName]="feature.name" [attr.name]="feature.name">
+                <option [ngValue]="null" disabled>Select...</option>
+                @for (option of feature.options ?? []; track option) {
+                  <option [ngValue]="option">{{ option }}</option>
+                }
+              </select>
+            }
+            @case ('boolean') {
+              <select [id]="inputId(feature)" [formControlName]="feature.name" [attr.name]="feature.name">
+                <option [ngValue]="null" disabled>Select...</option>
+                <option [ngValue]="true">Yes</option>
+                <option [ngValue]="false">No</option>
+              </select>
+            }
+            @default {
+              <input
+                type="number"
+                [id]="inputId(feature)"
+                [formControlName]="feature.name"
+                [attr.name]="feature.name"
+                [attr.min]="feature.min"
+                [attr.max]="feature.max"
+                [attr.step]="feature.integer ? 1 : 'any'"
+              />
+              <small class="hint">{{ rangeHint(feature) }}</small>
+            }
+          }
+
+          @if (showError(feature)) {
+            <small class="error">{{ errorMessage(feature) }}</small>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="actions">
+      <button type="button" class="secondary" (click)="fillSample()">Fill sample values</button>
+      <button type="button" class="secondary" (click)="resetForm()">Clear</button>
+      <button type="submit" class="primary" [disabled]="deployedStatic || loading()">
+        {{ loading() ? 'Predicting...' : 'Predict severity' }}
+      </button>
+    </div>
+
+    @if (submitted() && form.invalid) {
+      <p class="error">Please correct the highlighted fields.</p>
+    }
+  </form>
+
+  <section class="card result" aria-live="polite">
+    <h2>Result</h2>
+
+    @if (apiError(); as message) {
+      <div class="api-error" role="alert">{{ message }}</div>
+    }
+
+    @if (result(); as r) {
+      <p class="prediction">Predicted: <strong>{{ r.label }}</strong></p>
+      <table class="probabilities">
+        <thead>
+          <tr><th>Class</th><th>Probability</th><th></th></tr>
+        </thead>
+        <tbody>
+          @for (row of probabilityRows(); track row.label) {
+            <tr [class.predicted]="row.predicted">
+              <td>{{ row.label }}</td>
+              <td class="pct">{{ row.percent }}%</td>
+              <td class="bar-cell"><span class="bar" [style.width.%]="row.percent"></span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <p class="meta">Model version {{ r.model_version }} · task: {{ r.task }}</p>
+      <p class="disclaimer">{{ r.disclaimer }}</p>
+    } @else if (!apiError()) {
+      <p class="muted">
+        Fill in the form and press "Predict severity". Classes: {{ classes.join(', ') }}
+        (model version {{ schemaVersion }}).
+      </p>
+      <p class="disclaimer">{{ disclaimer }}</p>
+    }
+  </section>
+</main>
