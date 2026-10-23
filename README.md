@@ -306,7 +306,20 @@ The dataset is not in the repository, so pass the path to your copy of the CSV:
 python notebooks\train_small_lgbm.py <path-to-csv>
 ```
 
-This rewrites `backend/models/model_bundle.joblib`. If the category values change, update `backend/feature_schema.json` as well, then rerun the backend and frontend tests.
+The training script rewrites all model-dependent files itself:
+
+- `backend/models/model_bundle.joblib` (pipeline, features, task, model version)
+- `backend/feature_schema.json` (allowed categories, ranges, test metrics)
+- `data/sample_inputs.csv` (3 example rows)
+- `docs/evidence/model_metrics.txt` (test metrics report)
+
+Then regenerate the example request and rerun the tests:
+
+```powershell
+python backend\make_payload.py
+python -m pytest -q backend\tests
+cd frontend; npm test -- --watch=false
+```
 
 ## Troubleshooting and demo
 
