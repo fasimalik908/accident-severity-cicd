@@ -1,0 +1,4 @@
+Source,State,Hour,Day_of_Week,Temperature(F),Humidity(%),Visibility(mi),Wind_Speed(mph),Weather_Condition,Crossing,Junction,Traffic_Signal
+Source2,PA,17,1,36.0,59.0,10.0,9.0,Fair,False,True,False
+Source1,TX,23,5,69.0,90.0,9.0,8.0,Cloudy,False,False,True
+Source2,GA,18,0,87.8,45.0,10.0,6.9,Mostly Cloudy,False,False,False

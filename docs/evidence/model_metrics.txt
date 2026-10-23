@@ -1,0 +1,40 @@
+Model metrics - LightGBM Severity classifier, model_version 1.0
+Teaching/research prototype only. Not for operational, safety or insurance decisions.
+
+Data: us_accidents_300k_clean_engineered.csv (300000 rows)
+Split: stratified 80/20 train/test, random_state=42
+Train rows: 240000  Test rows: 60000
+Features: Source, State, Hour, Day_of_Week, Temperature(F), Humidity(%), Visibility(mi), Wind_Speed(mph), Weather_Condition, Crossing, Junction, Traffic_Signal
+Model: OneHotEncoder(sparse, handle_unknown=ignore) + LGBMClassifier(n_estimators=300, learning_rate=0.05, num_leaves=63, class_weight=balanced, random_state=42)
+
+Test-split metrics:
+  accuracy: 0.5681
+  macro_f1: 0.3826
+  balanced_accuracy: 0.6509
+  weighted_f1: 0.6353
+
+Classification report (test split):
+              precision    recall  f1-score   support
+
+           1      0.067     0.601     0.121       524
+           2      0.953     0.516     0.669     47781
+           3      0.451     0.794     0.575     10123
+           4      0.094     0.693     0.165      1572
+
+    accuracy                          0.568     60000
+   macro avg      0.391     0.651     0.383     60000
+weighted avg      0.838     0.568     0.635     60000
+
+Confusion matrix (rows = true Severity 1-4, cols = predicted 1-4):
+[[  315    96    65    48]
+ [ 3776 24642  9599  9764]
+ [  530   816  8038   739]
+ [   48   314   121  1089]]
+
+Note on these results:
+- Test accuracy 0.5681 is BELOW the majority-class baseline of 0.7964 (always predicting Severity 2: 47781 of 60000 test rows).
+- Severity 1 and Severity 4 are predicted poorly: Severity 1 precision 0.067 / F1 0.121, Severity 4 precision 0.094 / F1 0.165.
+  Most predictions of class 1 or 4 are wrong.
+- class_weight=balanced raises recall on the rare classes at the cost of overall accuracy.
+- Macro-F1 0.3826 is the more honest headline metric for this imbalanced task.
+- Teaching/research prototype only. Not for operational, safety or insurance decisions.
