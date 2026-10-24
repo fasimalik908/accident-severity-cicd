@@ -11,9 +11,13 @@ Supporting files for the lab report.
 
 Workflows: "Full-stack CI" (`.github/workflows/ci.yml`) and "Deploy Angular to GitHub Pages" (`.github/workflows/pages.yml`). All runs: https://github.com/fasimalik908/accident-severity-cicd/actions
 
-To be filled after the workflows run.
-
 | Workflow | Commit | Run URL | Result |
 |---|---|---|---|
-| Full-stack CI | | | |
-| Deploy Angular to GitHub Pages | | | |
+| Full-stack CI | 05fba81 Add CI and GitHub Pages workflows | https://github.com/fasimalik908/accident-severity-cicd/actions/runs/40125926824 | success (backend: 13 pytest passed; frontend: 9 unit tests passed, build, artifact `angular-build`) |
+| Deploy Angular to GitHub Pages | 05fba81 Add CI and GitHub Pages workflows | https://github.com/fasimalik908/accident-severity-cicd/actions/runs/40125926717 | success (first deployment) |
+| Full-stack CI | 4cfd8ff Update heading text | https://github.com/fasimalik908/accident-severity-cicd/actions/runs/40126357931 | success |
+| Deploy Angular to GitHub Pages | 4cfd8ff Update heading text | https://github.com/fasimalik908/accident-severity-cicd/actions/runs/40126357736 | success (live site shows the updated heading) |
+
+The 4cfd8ff runs are a rehearsal of the lab demo: edit the `<h1>` in `frontend/src/app/app.html`, commit, push, and both workflows rebuild and redeploy the site.
+
+Live site: https://fasimalik908.github.io/accident-severity-cicd/ (static UI only; the Predict button is disabled there with a notice).
