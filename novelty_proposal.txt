@@ -1,0 +1,139 @@
+NOVELTY PROPOSAL
+================
+
+Complete Name : Muhammad Fasihullah
+Roll Number   : 233138
+Section       : BSSE-F23-A
+Date          : 27-10-2026
+Repository    : https://github.com/fasimalik908/accident-severity-cicd
+
+
+1. BASE PAPER
+-------------
+Y. A. Alobidan, A. Li, B. Soh, Z. Almudayni,
+"Feature Selection for Accident Severity Modeling: A WCFR-Based Analysis on
+the U.S. Accidents Dataset", Electronics, vol. 15, no. 6, 1308, 2026.
+DOI: https://doi.org/10.3390/electronics15061308
+
+Dataset : US Accidents (2016-2023), S. Moosavi et al., 7.7 million records,
+          46 columns, target = Severity (1-4).
+Method  : Weighted Conditional Mutual Information feature selection (WCFR),
+          compared with L1-LR, MI, mRMR, CMIM, ReliefF and tree importance;
+          classifiers Logistic Regression, Random Forest and XGBoost.
+
+
+2. WHAT I HAVE ALREADY DONE (Lab 2)
+-----------------------------------
+- 300,000-row random sample from all 7 dataset shards (seed 42),
+  80/20 stratified split (240,000 train / 60,000 test).
+- Training-only imputation, 10 engineered features.
+- Approximate reproduction of the paper: 3 feature settings (all features,
+  my WCFR Top-10, the paper's published Top-10) x LR/RF/XGBoost x
+  (unweighted, balanced) = 18 held-out runs, plus 5-fold CV on 50,000 rows.
+- Two new models not used in the paper: LightGBM and CatBoost.
+
+Held-out test results (all features, unweighted):
+
+  Model           Accuracy   Macro-F1
+  Random Forest   84.82%     43.07%
+  XGBoost         84.18%     42.31%
+  LightGBM        84.83%     45.74%   (best)
+  CatBoost        83.04%     35.97%
+
+Paper's reported WCFR validation scores: RF 83.70% / 51.97%,
+XGBoost 83.70% / 54.76% (Accuracy / Macro-F1).
+
+
+3. RESEARCH GAPS FOUND IN THE BASE PAPER
+----------------------------------------
+Gap 1 - Post-event features (information leakage).
+  The paper's WCFR Top-10 includes End_Time_dow and Distance(mi). Both are
+  known only after the accident is cleared, so the model cannot be used to
+  predict severity when an accident is first reported. Source (the data
+  provider) is also in the Top-10; it reflects reporting differences between
+  providers, not the accident itself.
+
+Gap 2 - Class imbalance is not solved.
+  Severity 4 is only 2.62% and Severity 1 only 0.87% of the data. In my
+  reproduction, class balancing raised XGBoost Severity-4 recall from 4.6% to
+  78.8%, but accuracy dropped from 84.2% to 55.6%. The paper itself names
+  cost-sensitive learning as future work and does not give a reproducible
+  weighting scheme.
+
+Gap 3 - Severity is ordinal, but it is treated as plain multiclass.
+  A Severity-4 accident predicted as 1 is a worse error than one predicted as
+  3, but the paper's models and metrics treat all errors as equal.
+
+Gap 4 - No time-based evaluation.
+  The paper reports that accident patterns change from year to year
+  (non-stationarity) but evaluates on an 80/20 split and cross-validation
+  that mix all years, which can overestimate real-world performance on
+  future accidents.
+
+Gap 5 - Reproducibility.
+  In my reproduction the paper's published Top-10 did not beat the
+  all-features baseline, and no run matched the paper's Macro-F1 within 5
+  points, because the sample, thresholds and WCFR implementation details are
+  not fully specified.
+
+
+4. PROPOSED NOVELTY
+-------------------
+Title (working):
+  "Leakage-Aware, Cost-Sensitive WCFR Feature Selection for At-Onset
+   Accident Severity Prediction with Temporal Validation"
+
+The idea, in steps:
+  a) At-onset feature set: keep only features available when the accident is
+     first reported (start time, location, weather, road features); remove
+     End_Time, End_Lat/End_Lng, Distance and Duration. Measure how much of the
+     paper's performance came from post-event features.
+  b) Run WCFR (and mRMR, CMIM, ReliefF for comparison) on this at-onset set,
+     with a zero-aware discretization fix for zero-inflated features such as
+     Precipitation (found in my reproduction).
+  c) Cost-sensitive and ordinal learning: use a severity cost matrix and
+     per-class decision thresholds tuned on validation data, to find a better
+     trade-off between Severity-4 recall and overall accuracy than simple
+     "balanced" weights.
+  d) Temporal validation: train on 2016-2021, test on 2022-2023, and report
+     how stable the selected features are over time (Jaccard similarity).
+  e) Explainability: SHAP analysis of the at-onset model to show which
+     factors drive severe (3-4) accidents.
+
+
+5. MODELS
+---------
+Baselines (from the paper): Logistic Regression, Random Forest, XGBoost.
+New models:
+  - LightGBM (best in my Lab 2 results) and CatBoost
+  - Cost-sensitive LightGBM with tuned class thresholds
+  - Ordinal classification model (e.g., cumulative-link / ordinal boosting)
+
+
+6. EVALUATION
+-------------
+- Macro-F1 (main metric), accuracy, balanced accuracy
+- Per-class recall and precision, especially Severity 3 and 4
+- Ordinal error: mean absolute error between true and predicted severity
+- Random split vs temporal split (2022-2023 test)
+- Feature stability: Jaccard similarity of Top-10 features across folds
+  and across years
+- Statistical significance: repeated runs with different seeds
+
+
+7. EXPECTED CONTRIBUTION
+------------------------
+- A realistic, leakage-free benchmark of WCFR for predicting severity at the
+  time an accident is reported.
+- Better detection of severe accidents (Severity 3-4) without the large
+  accuracy loss of simple class balancing.
+- Evidence on whether WCFR-selected features stay stable over time.
+
+
+8. PLAN
+-------
+- Now           : this proposal.
+- After midterm : implement steps (a)-(e), run the new models, share
+                  executed results and progress updates.
+- Week 12-13    : first draft of the research manuscript.
+(Exact dates will follow the schedule shared by the teacher on GCR.)
